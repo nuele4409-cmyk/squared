@@ -1,0 +1,19 @@
+node_modules/
+dist/
+
+# foundry
+contracts/out/
+contracts/cache/
+contracts/broadcast/*/31337/
+contracts/.env
+
+# frontend
+web/.env
+web/.env.local
+
+# agent tooling (monskills install/reference, not part of the app)
+.agents/
+
+# misc
+.DS_Store
+*.log
