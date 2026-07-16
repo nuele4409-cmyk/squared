@@ -48,7 +48,10 @@ web/         React + Vite frontend — wagmi + viem, injected() wallet connector
 
 ## Contract
 
-**Address:** `TBD — filled in after deployment`
+**Address:** [`0x7EBbBb52D8f68FB826f2AE8364961fc42e3bEDaa`](https://testnet.monadexplorer.com/address/0x7EBbBb52D8f68FB826f2AE8364961fc42e3bEDaa) (Monad Testnet)
+
+Verified on [MonadVision](https://testnet.monadvision.com/address/0x7EBbBb52D8f68FB826f2AE8364961fc42e3bEDaa)
+and [Monadscan](https://testnet.monadscan.com/address/0x7EBbBb52D8f68FB826f2AE8364961fc42e3bEDaa).
 
 `SquaredLedger.sol` (Solidity 0.8.24) — see [`contracts/src/SquaredLedger.sol`](contracts/src/SquaredLedger.sol).
 This is an MVP contract for a testnet hackathon, not an audited contract — don't reuse
