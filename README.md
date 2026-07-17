@@ -5,6 +5,9 @@ transport money, data top-ups, a lunch someone covered.
 
 Built for the Spark Hackathon (BuildAnything × Monad).
 
+**Live app:** https://squared-alpha.vercel.app
+**Repo:** https://github.com/nuele4409-cmyk/squared
+
 ## Problem
 
 Small informal debts between friends, roommates, and hostel-mates have no shared
