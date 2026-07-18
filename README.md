@@ -22,7 +22,8 @@ transaction on Monad Testnet, so the history can't be quietly edited later.
 
 ## How it works
 
-1. Connect a wallet (MetaMask or any injected EVM wallet).
+1. Connect a wallet — MetaMask, Coinbase Wallet, or any mobile wallet via WalletConnect's
+   QR code, through a proper multi-wallet picker (not a single hardcoded connector).
 2. **Add a debt** — pick who you owe, an amount in MON, and a short reason.
 3. **Dashboard** — see what you owe and what's owed to you, grouped per person.
 4. **Settle** a debt two ways:
@@ -77,10 +78,15 @@ cd contracts
 forge script script/Deploy.s.sol --rpc-url monad_testnet --broadcast --account <your-keystore-account>
 ```
 
+The same script also works against `--rpc-url monad_mainnet` (chain 143) — the contract
+address resolution in the frontend (`web/src/config.js`) already supports both networks,
+but Mainnet isn't deployed yet and is hidden from the app's network switcher until it is.
+
 Then set the deployed address in `web/.env` (see `web/.env.example`):
 
 ```
-VITE_LEDGER_ADDRESS=0x...
+VITE_LEDGER_ADDRESS_TESTNET=0x...
+VITE_LEDGER_ADDRESS_MAINNET=0x...   # leave blank until actually deployed
 ```
 
 ## Frontend
@@ -90,12 +96,13 @@ Requires Node.js.
 ```bash
 cd web
 npm install
-cp .env.example .env   # then fill in VITE_LEDGER_ADDRESS
+cp .env.example .env   # then fill in the values below
 npm run dev
 ```
 
-Uses wagmi's `injected()` connector — works directly with MetaMask, no WalletConnect
-project ID or extra signup required.
+`.env` needs:
+- `VITE_LEDGER_ADDRESS_TESTNET` — the deployed contract address (see above)
+- `VITE_REOWN_PROJECT_ID` — a free project ID from [cloud.reown.com](https://cloud.reown.com), powers the multi-wallet connect modal (MetaMask, WalletConnect QR for mobile wallets, Coinbase, etc.)
 
 ## Testing the full loop
 
