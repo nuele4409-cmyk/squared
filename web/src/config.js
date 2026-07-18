@@ -1,14 +1,31 @@
-import { createConfig, http } from 'wagmi'
-import { injected } from 'wagmi/connectors'
+import { createAppKit } from '@reown/appkit/react'
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { monadTestnet } from './chain'
 
-export const wagmiConfig = createConfig({
-  chains: [monadTestnet],
-  connectors: [injected()],
-  transports: {
-    [monadTestnet.id]: http(),
-  },
+const projectId = import.meta.env.VITE_REOWN_PROJECT_ID
+
+const metadata = {
+  name: 'Squared',
+  description: 'Onchain IOU tracker for small debts between friends',
+  url: 'https://squared-alpha.vercel.app',
+  icons: ['https://squared-alpha.vercel.app/favicon.svg'],
+}
+
+const wagmiAdapter = new WagmiAdapter({
+  networks: [monadTestnet],
+  projectId,
+  ssr: false,
 })
+
+createAppKit({
+  adapters: [wagmiAdapter],
+  networks: [monadTestnet],
+  projectId,
+  metadata,
+  features: { analytics: false, email: false, socials: false, swaps: false, onramp: false, send: false },
+})
+
+export const wagmiConfig = wagmiAdapter.wagmiConfig
 
 // Filled in after `forge script script/Deploy.s.sol --broadcast` against Monad testnet.
 export const LEDGER_ADDRESS = import.meta.env.VITE_LEDGER_ADDRESS || ''
