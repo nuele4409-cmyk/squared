@@ -6,8 +6,10 @@ solc_version = "0.8.24"
 
 [rpc_endpoints]
 monad_testnet = "https://testnet-rpc.monad.xyz"
+monad_mainnet = "https://rpc.monad.xyz"
 
 [etherscan]
 monad_testnet = { key = "", chain = 10143, url = "https://sourcify-api-monad.blockvision.org/" }
+monad_mainnet = { key = "", chain = 143, url = "https://sourcify-api-monad.blockvision.org/" }
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

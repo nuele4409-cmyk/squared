@@ -1,4 +1,5 @@
 import { useAppKit } from '@reown/appkit/react'
+import { Footer } from './Footer'
 
 const FEATURES = [
   {
@@ -125,7 +126,7 @@ export function ConnectScreen() {
           <button type="button" className="btn btn-primary btn-lg landing-cta" onClick={() => open()}>
             Connect Wallet
           </button>
-          <p className="network-note">Runs on Monad Testnet · Chain ID 10143</p>
+          <p className="network-note">Live on Monad Testnet and Mainnet</p>
         </div>
         <div className="landing-hero-preview">
           <PreviewLedger />
@@ -141,6 +142,8 @@ export function ConnectScreen() {
           </div>
         ))}
       </section>
+
+      <Footer />
     </div>
   )
 }

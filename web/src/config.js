@@ -1,6 +1,6 @@
 import { createAppKit } from '@reown/appkit/react'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-import { monadTestnet } from './chain'
+import { monadTestnet, monadMainnet, SUPPORTED_CHAINS } from './chain'
 
 const projectId = import.meta.env.VITE_REOWN_PROJECT_ID
 
@@ -12,23 +12,32 @@ const metadata = {
 }
 
 const wagmiAdapter = new WagmiAdapter({
-  networks: [monadTestnet],
+  networks: SUPPORTED_CHAINS,
   projectId,
   ssr: false,
 })
 
 createAppKit({
   adapters: [wagmiAdapter],
-  networks: [monadTestnet],
+  networks: SUPPORTED_CHAINS,
   projectId,
   metadata,
+  themeVariables: { '--w3m-accent': '#6c4cf7' },
   features: { analytics: false, email: false, socials: false, swaps: false, onramp: false, send: false },
 })
 
 export const wagmiConfig = wagmiAdapter.wagmiConfig
 
-// Filled in after `forge script script/Deploy.s.sol --broadcast` against Monad testnet.
-export const LEDGER_ADDRESS = import.meta.env.VITE_LEDGER_ADDRESS || ''
+// SquaredLedger deployed separately per network — testnet via faucet MON,
+// mainnet with real MON. Empty string means "not deployed on this chain yet."
+const LEDGER_ADDRESSES = {
+  [monadTestnet.id]: import.meta.env.VITE_LEDGER_ADDRESS_TESTNET || '',
+  [monadMainnet.id]: import.meta.env.VITE_LEDGER_ADDRESS_MAINNET || '',
+}
+
+export function getLedgerAddress(chainId) {
+  return LEDGER_ADDRESSES[chainId] || ''
+}
 
 export const LEDGER_ABI = [
   {

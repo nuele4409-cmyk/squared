@@ -1,11 +1,13 @@
 import { useEffect, useRef } from 'react'
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
-import { LEDGER_ADDRESS, LEDGER_ABI } from '../config'
+import { useAccount, useChainId, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+import { getLedgerAddress, LEDGER_ABI } from '../config'
 import { truncateAddress, formatMon, formatDate } from '../lib/format'
 import { useToast } from '../context/ToastContext'
 
 export function DebtDetail({ debt, onClose, onSettled }) {
   const { address } = useAccount()
+  const chainId = useChainId()
+  const ledgerAddress = getLedgerAddress(chainId)
   const { writeContract, data: hash, isPending, error, reset } = useWriteContract()
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash })
   const showToast = useToast()
@@ -30,7 +32,7 @@ export function DebtDetail({ debt, onClose, onSettled }) {
     reset()
     actionRef.current = 'onchain'
     writeContract({
-      address: LEDGER_ADDRESS,
+      address: ledgerAddress,
       abi: LEDGER_ABI,
       functionName: 'settleOnchain',
       args: [debt.id],
@@ -42,7 +44,7 @@ export function DebtDetail({ debt, onClose, onSettled }) {
     reset()
     actionRef.current = 'offline'
     writeContract({
-      address: LEDGER_ADDRESS,
+      address: ledgerAddress,
       abi: LEDGER_ABI,
       functionName: 'confirmOfflineSettlement',
       args: [debt.id],

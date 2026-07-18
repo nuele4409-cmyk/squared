@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { isAddress, parseEther } from 'viem'
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
-import { LEDGER_ADDRESS, LEDGER_ABI } from '../config'
+import { useAccount, useChainId, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+import { getLedgerAddress, LEDGER_ABI } from '../config'
 import { useToast } from '../context/ToastContext'
 import { truncateAddress } from '../lib/format'
 
 export function AddDebtForm({ onCreated }) {
   const { address } = useAccount()
+  const chainId = useChainId()
+  const ledgerAddress = getLedgerAddress(chainId)
   const [creditor, setCreditor] = useState('')
   const [amount, setAmount] = useState('')
   const [reason, setReason] = useState('')
@@ -53,7 +55,7 @@ export function AddDebtForm({ onCreated }) {
     reset()
     submitted.current = { amount, creditor }
     writeContract({
-      address: LEDGER_ADDRESS,
+      address: ledgerAddress,
       abi: LEDGER_ABI,
       functionName: 'createDebt',
       args: [creditor, parseEther(amount), reason || 'no reason given'],
@@ -66,6 +68,12 @@ export function AddDebtForm({ onCreated }) {
     <form className="add-debt-form" onSubmit={submit}>
       <h2>Log a debt</h2>
       <p className="form-hint">Who do you owe, and for what?</p>
+
+      {!ledgerAddress && (
+        <p className="error-text">
+          Squared isn't deployed on this network yet — switch networks to continue.
+        </p>
+      )}
 
       <label className="field">
         <span>Who you owe (wallet address)</span>
@@ -105,7 +113,7 @@ export function AddDebtForm({ onCreated }) {
       {formError && <p className="error-text">{formError}</p>}
       {error && <p className="error-text">{error.shortMessage ?? error.message}</p>}
 
-      <button type="submit" className="btn btn-primary btn-lg" disabled={busy}>
+      <button type="submit" className="btn btn-primary btn-lg" disabled={busy || !ledgerAddress}>
         {busy ? 'Recording…' : 'Add debt'}
       </button>
     </form>
