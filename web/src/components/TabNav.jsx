@@ -5,8 +5,14 @@ const TABS = [
 ]
 
 export function TabNav({ active, onChange }) {
+  const activeIndex = Math.max(0, TABS.findIndex((t) => t.id === active))
+
   return (
     <nav className="tab-nav">
+      <div
+        className="tab-indicator"
+        style={{ transform: `translateX(${activeIndex * 100}%)` }}
+      />
       {TABS.map((tab) => (
         <button
           key={tab.id}

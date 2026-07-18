@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { DebtRow } from './DebtRow'
 import { DebtDetail } from './DebtDetail'
+import { DashboardSkeleton } from './Skeleton'
 import { truncateAddress, formatMon } from '../lib/format'
 
 export function Dashboard({ debts, isLoading, refetch }) {
@@ -42,11 +43,11 @@ export function Dashboard({ debts, isLoading, refetch }) {
   }, [debts, address])
 
   if (isLoading) {
-    return <div className="empty-state">Reading the ledger…</div>
+    return <DashboardSkeleton />
   }
 
   return (
-    <div className="dashboard">
+    <div className="dashboard fade-in">
       <div className="stat-row">
         <div className="stat-tile">
           <span className="stat-label">You owe</span>

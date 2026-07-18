@@ -2,13 +2,14 @@ import { useState } from 'react'
 import { useAccount } from 'wagmi'
 import { DebtRow } from './DebtRow'
 import { DebtDetail } from './DebtDetail'
+import { HistorySkeleton } from './Skeleton'
 
 export function History({ debts, isLoading, refetch }) {
   const { address } = useAccount()
   const [selected, setSelected] = useState(null)
 
   if (isLoading) {
-    return <div className="empty-state">Reading the ledger…</div>
+    return <HistorySkeleton />
   }
 
   if (debts.length === 0) {
@@ -16,7 +17,7 @@ export function History({ debts, isLoading, refetch }) {
   }
 
   return (
-    <div className="history-list">
+    <div className="history-list fade-in">
       {debts.map((d) => (
         <DebtRow key={d.id.toString()} debt={d} myAddress={address} onClick={setSelected} />
       ))}

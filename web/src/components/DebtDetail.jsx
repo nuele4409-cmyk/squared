@@ -1,24 +1,34 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { LEDGER_ADDRESS, LEDGER_ABI } from '../config'
 import { truncateAddress, formatMon, formatDate } from '../lib/format'
+import { useToast } from '../context/ToastContext'
 
 export function DebtDetail({ debt, onClose, onSettled }) {
   const { address } = useAccount()
   const { writeContract, data: hash, isPending, error, reset } = useWriteContract()
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash })
+  const showToast = useToast()
+  const actionRef = useRef(null)
 
   const iAmDebtor = debt.debtor.toLowerCase() === address?.toLowerCase()
   const iAmCreditor = debt.creditor.toLowerCase() === address?.toLowerCase()
 
   useEffect(() => {
     if (isSuccess) {
+      showToast(
+        actionRef.current === 'onchain'
+          ? `Paid ${formatMon(debt.amount)} MON onchain — settled`
+          : 'Marked settled — offline payment confirmed',
+        'success',
+      )
       onSettled()
     }
-  }, [isSuccess, onSettled])
+  }, [isSuccess, onSettled, showToast, debt.amount])
 
   const payOnchain = () => {
     reset()
+    actionRef.current = 'onchain'
     writeContract({
       address: LEDGER_ADDRESS,
       abi: LEDGER_ABI,
@@ -30,6 +40,7 @@ export function DebtDetail({ debt, onClose, onSettled }) {
 
   const confirmOffline = () => {
     reset()
+    actionRef.current = 'offline'
     writeContract({
       address: LEDGER_ADDRESS,
       abi: LEDGER_ABI,

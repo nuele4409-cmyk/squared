@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { isAddress, parseEther } from 'viem'
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { LEDGER_ADDRESS, LEDGER_ABI } from '../config'
+import { useToast } from '../context/ToastContext'
+import { truncateAddress } from '../lib/format'
 
 export function AddDebtForm({ onCreated }) {
   const { address } = useAccount()
@@ -9,18 +11,26 @@ export function AddDebtForm({ onCreated }) {
   const [amount, setAmount] = useState('')
   const [reason, setReason] = useState('')
   const [formError, setFormError] = useState('')
+  const showToast = useToast()
+  const submitted = useRef(null)
 
   const { writeContract, data: hash, isPending, error, reset } = useWriteContract()
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash })
 
   useEffect(() => {
     if (isSuccess) {
+      if (submitted.current) {
+        showToast(
+          `Logged ${submitted.current.amount} MON owed to ${truncateAddress(submitted.current.creditor)}`,
+          'success',
+        )
+      }
       setCreditor('')
       setAmount('')
       setReason('')
       onCreated()
     }
-  }, [isSuccess, onCreated])
+  }, [isSuccess, onCreated, showToast])
 
   const submit = (e) => {
     e.preventDefault()
@@ -41,6 +51,7 @@ export function AddDebtForm({ onCreated }) {
     }
 
     reset()
+    submitted.current = { amount, creditor }
     writeContract({
       address: LEDGER_ADDRESS,
       abi: LEDGER_ABI,
