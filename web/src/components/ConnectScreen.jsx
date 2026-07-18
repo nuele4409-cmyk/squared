@@ -126,7 +126,7 @@ export function ConnectScreen() {
           <button type="button" className="btn btn-primary btn-lg landing-cta" onClick={() => open()}>
             Connect Wallet
           </button>
-          <p className="network-note">Live on Monad Testnet and Mainnet</p>
+          <p className="network-note">Runs on Monad Testnet · Chain ID 10143</p>
         </div>
         <div className="landing-hero-preview">
           <PreviewLedger />

@@ -1,6 +1,6 @@
 import { createAppKit } from '@reown/appkit/react'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-import { monadTestnet, monadMainnet, SUPPORTED_CHAINS } from './chain'
+import { monadTestnet, monadMainnet } from './chain'
 
 const projectId = import.meta.env.VITE_REOWN_PROJECT_ID
 
@@ -11,15 +11,20 @@ const metadata = {
   icons: ['https://squared-alpha.vercel.app/favicon.svg'],
 }
 
+// Only Testnet is offered in the UI right now — Mainnet support is built
+// (see getLedgerAddress below and chain.js) but not deployed, so it stays
+// hidden from the network switcher until it's actually funded and live.
+const LIVE_CHAINS = [monadTestnet]
+
 const wagmiAdapter = new WagmiAdapter({
-  networks: SUPPORTED_CHAINS,
+  networks: LIVE_CHAINS,
   projectId,
   ssr: false,
 })
 
 createAppKit({
   adapters: [wagmiAdapter],
-  networks: SUPPORTED_CHAINS,
+  networks: LIVE_CHAINS,
   projectId,
   metadata,
   themeVariables: { '--w3m-accent': '#6c4cf7' },
