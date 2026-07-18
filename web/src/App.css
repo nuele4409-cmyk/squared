@@ -35,7 +35,7 @@
 .chip {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 6px 14px;
   font-size: 13px;
   color: var(--ink-soft);
@@ -50,7 +50,7 @@
 
 .btn {
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-control);
   cursor: pointer;
   font-weight: 600;
   padding: 11px 22px;
@@ -93,7 +93,7 @@
   background: transparent;
   color: var(--ink-soft);
   border: 1px solid var(--card-border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 6px 14px;
   font-size: 13px;
 }
@@ -134,7 +134,7 @@
   width: 100%;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  border-radius: 20px;
+  border-radius: var(--radius-card);
   padding: 40px 32px;
   text-align: center;
   box-shadow: 0 20px 60px -20px var(--shadow);
@@ -145,10 +145,12 @@
   position: absolute;
   top: 24px;
   right: 24px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 12px;
+  letter-spacing: 0.5px;
   color: var(--stamp-red, var(--owe));
   border: 1.5px solid currentColor;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 3px 10px;
   transform: rotate(6deg);
   opacity: 0.75;
@@ -168,7 +170,7 @@
 
 .pitch {
   font-size: 14px;
-  color: var(--ink-faint);
+  color: var(--ink-soft);
   line-height: 1.5;
   margin-bottom: 28px;
 }
@@ -188,9 +190,24 @@
 /* ---------- landing page ---------- */
 
 .landing {
+  position: relative;
   max-width: 1120px;
   margin: 0 auto;
   padding: 0 24px 72px;
+  min-height: 100svh;
+}
+
+/* ledger margin rule — the red vertical line of an account book, running the
+   full page height in the left margin */
+.landing::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: color-mix(in srgb, var(--stamp-red, var(--owe)) 40%, transparent);
+  pointer-events: none;
 }
 
 .landing-header {
@@ -225,6 +242,75 @@
   display: inline-block;
   margin-bottom: 20px;
   transform: rotate(-4deg);
+}
+
+/* one orchestrated load sequence: stamp → headline → pitch → CTA → status,
+   with the preview card rising alongside (preview-rise, delay .1s) */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-up {
+  animation: fade-up 0.5s ease-out both;
+}
+
+.fade-up.d2 {
+  animation-delay: 80ms;
+}
+
+.fade-up.d3 {
+  animation-delay: 160ms;
+}
+
+.fade-up.d4 {
+  animation-delay: 240ms;
+}
+
+.fade-up.d5 {
+  animation-delay: 320ms;
+}
+
+.status-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  color: var(--ink-soft);
+}
+
+.status-dot {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--owed);
+  flex-shrink: 0;
+}
+
+.status-dot-ping {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--owed);
+  opacity: 0.75;
+  animation: status-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes status-ping {
+  75%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
 }
 
 .landing-headline {
@@ -272,14 +358,33 @@
   }
 }
 
+/* the locked ledger — a real page glimpsed through glass, clickable to connect */
 .preview-card {
   position: relative;
+  display: block;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  border-radius: 20px;
+  border-radius: var(--radius-card);
   padding: 20px;
   box-shadow: 0 30px 80px -30px var(--shadow);
   overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+}
+
+.preview-card:hover {
+  box-shadow: 0 34px 90px -28px var(--shadow);
+}
+
+.preview-blur {
+  filter: blur(12px);
+  transform: scale(1.05);
+  pointer-events: none;
+  user-select: none;
 }
 
 .preview-card .stat-row,
@@ -291,6 +396,26 @@
   cursor: default;
 }
 
+.glass-sweep {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  background: linear-gradient(75deg, transparent 42%, var(--sweep) 50%, transparent 58%);
+  animation: glass-sweep 7s ease-in-out infinite;
+}
+
+@keyframes glass-sweep {
+  0%,
+  100% {
+    transform: translateX(-120%) rotate(8deg);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(120%) rotate(8deg);
+    opacity: 0.15;
+  }
+}
+
 .preview-lock {
   position: absolute;
   inset: 0;
@@ -298,17 +423,31 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   text-align: center;
   padding: 20px;
-  background: color-mix(in srgb, var(--card-bg) 74%, transparent);
-  backdrop-filter: blur(3px);
-  color: var(--ink-soft);
+  background: radial-gradient(circle at center, var(--glass-center), var(--glass-edge));
+  color: var(--glass-text);
+}
+
+.preview-lock p {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 13px;
+  letter-spacing: 0.4px;
 }
 
 .preview-lock svg {
-  color: var(--ink-faint);
+  opacity: 0.7;
+}
+
+.preview-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 96px;
+  background: linear-gradient(to top, var(--card-bg), transparent);
+  pointer-events: none;
 }
 
 .landing-features {
@@ -328,7 +467,7 @@
 .feature-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  border-radius: 16px;
+  border-radius: var(--radius-card);
   padding: 24px;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
@@ -374,7 +513,7 @@
   display: flex;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  border-radius: 14px;
+  border-radius: var(--radius-control);
   padding: 4px;
   margin-bottom: 24px;
 }
@@ -386,7 +525,7 @@
   left: 4px;
   width: calc((100% - 8px) / 3);
   background: var(--accent);
-  border-radius: 10px;
+  border-radius: calc(var(--radius-control) - 4px);
   transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
   z-index: 0;
 }
@@ -422,7 +561,7 @@
 .stat-tile {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  border-radius: 16px;
+  border-radius: var(--radius-card);
   padding: 18px;
   display: flex;
   flex-direction: column;
@@ -462,7 +601,7 @@
 .person-group {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  border-radius: 16px;
+  border-radius: var(--radius-card);
   overflow: hidden;
   transition: box-shadow 0.2s ease;
 }
@@ -589,7 +728,7 @@
 .pill {
   font-size: 11px;
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-weight: 600;
 }
 
@@ -611,7 +750,7 @@
 .history-list {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  border-radius: 16px;
+  border-radius: var(--radius-card);
   overflow: hidden;
 }
 
@@ -620,7 +759,7 @@
 .add-debt-form {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  border-radius: 16px;
+  border-radius: var(--radius-card);
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -687,7 +826,7 @@
   background: var(--card-bg);
   width: 100%;
   max-width: 440px;
-  border-radius: 20px 20px 0 0;
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
   padding: 24px;
   box-shadow: 0 -20px 60px -20px var(--shadow);
   animation: modal-rise 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
@@ -723,7 +862,7 @@
 
 @media (min-width: 640px) {
   .modal-card {
-    border-radius: 20px;
+    border-radius: var(--radius-card);
   }
 }
 
@@ -788,7 +927,7 @@
   gap: 10px;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  border-radius: 12px;
+  border-radius: var(--radius-control);
   padding: 12px 16px;
   font-size: 13px;
   font-weight: 600;
@@ -895,7 +1034,7 @@
   background: color-mix(in srgb, var(--owe) 12%, var(--card-bg));
   border: 1px solid color-mix(in srgb, var(--owe) 30%, var(--card-border));
   color: var(--owe);
-  border-radius: 12px;
+  border-radius: var(--radius-control);
   padding: 12px 16px;
   font-size: 13px;
   margin-bottom: 20px;

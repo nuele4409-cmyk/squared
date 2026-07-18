@@ -22,7 +22,7 @@ const wagmiAdapter = new WagmiAdapter({
   ssr: false,
 })
 
-createAppKit({
+const appKit = createAppKit({
   adapters: [wagmiAdapter],
   networks: LIVE_CHAINS,
   projectId,
@@ -30,6 +30,10 @@ createAppKit({
   themeVariables: { '--w3m-accent': '#6c4cf7' },
   features: { analytics: false, email: false, socials: false, swaps: false, onramp: false, send: false },
 })
+
+if (import.meta.env.DEV) {
+  window.__appkit = appKit
+}
 
 export const wagmiConfig = wagmiAdapter.wagmiConfig
 
